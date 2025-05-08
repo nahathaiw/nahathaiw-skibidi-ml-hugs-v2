@@ -219,6 +219,7 @@ class GaussianTrainer():
         if self.human_gs:
             self.human_gs.train()
 
+        # tqdm progress bar
         pbar = tqdm(range(self.cfg.train.num_steps+1), desc="Training")
         
         rand_idx_iter = RandomIndexIterator(len(self.train_dataset))
@@ -237,6 +238,8 @@ class GaussianTrainer():
             
             human_gs_out, scene_gs_out = None, None
             
+            
+            ## forward pass
             if self.human_gs:
                 human_gs_out = self.human_gs.forward(
                     smpl_scale=data['smpl_scale'][None],
@@ -359,17 +362,23 @@ class GaussianTrainer():
             if t_iter % self.cfg.train.val_interval == 0 and t_iter > 0:
                 self.validate(t_iter)
             
+            ## here output the 3DGS
+            # [TODO] fix human 3DGS exporting issues
+            # maybe because configs are not set properly
             if t_iter == 0:
                 if self.scene_gs:
                     self.scene_gs.save_ply(f'{self.cfg.logdir}/meshes/scene_{t_iter:06d}_splat.ply')
                 if self.human_gs:
+                    # this isn't working somehow
                     save_ply(human_gs_out, f'{self.cfg.logdir}/meshes/human_{t_iter:06d}_splat.ply')
 
                 if self.cfg.mode in ['human', 'human_scene']:
                     self.render_canonical(t_iter, nframes=self.cfg.human.canon_nframes)
                 
-            if t_iter % self.cfg.train.anim_interval == 0 and t_iter > 0 and self.cfg.train.anim_interval > 0:
+            if t_iter > 0 and self.cfg.train.anim_interval > 0 and t_iter % self.cfg.train.anim_interval == 0:
+                logger.debug(f"Animating and saving at {t_iter:06d}")
                 if self.human_gs:
+                    # this isn't working somehow
                     save_ply(human_gs_out, f'{self.cfg.logdir}/meshes/human_{t_iter:06d}_splat.ply')
                 if self.anim_dataset is not None:
                     self.animate(t_iter)
@@ -390,16 +399,22 @@ class GaussianTrainer():
             create_video(f'{self.cfg.logdir}/train_progress/', video_fname, fps=10)
             shutil.rmtree(f'{self.cfg.logdir}/train_progress/')
             
+    # checkpointing
     def save_ckpt(self, iter=None):
+        # save both human and scene weights
+        # save only the scene gaussians
         
         iter_s = 'final' if iter is None else f'{iter:06d}'
         
         if self.human_gs:
             torch.save(self.human_gs.state_dict(), f'{self.cfg.logdir_ckpt}/human_{iter_s}.pth')
-            
+            save_ply(self.human_gs, f'{self.cfg.logdir}/meshes/human_{iter_s}_splat.ply')
+            logger.debug(f'Saved human gaussian {iter_s} using save_ckpt()')
         if self.scene_gs:
             torch.save(self.scene_gs.state_dict(), f'{self.cfg.logdir_ckpt}/scene_{iter_s}.pth')
             self.scene_gs.save_ply(f'{self.cfg.logdir}/meshes/scene_{iter_s}_splat.ply')
+            logger.debug(f'Saved scene gaussian {iter_s} using save_ckpt()')
+            
             
         logger.info(f'Saved checkpoint {iter_s}')
                 
@@ -697,9 +712,9 @@ class GaussianTrainer():
             canon_forward_out = self.human_gs.canon_forward()
         
         pbar = tqdm(range(nframes), desc="Canonical:")
-        if bg_color is 'white':
+        if bg_color == 'white':
             bg_color = torch.tensor([1, 1, 1], dtype=torch.float32, device="cuda")
-        elif bg_color is 'black':
+        elif bg_color == 'black':
             bg_color = torch.tensor([0, 0, 0], dtype=torch.float32, device="cuda")
             
             

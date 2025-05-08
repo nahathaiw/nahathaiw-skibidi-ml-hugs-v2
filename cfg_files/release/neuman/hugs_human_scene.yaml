@@ -1,3 +1,4 @@
+# adjusted config
 seed: 0
 mode: human_scene
 output_path: output
@@ -19,10 +20,10 @@ train:
   val_interval: 1000
   anim_interval: 15000
   optim_scene: true
-  save_progress_images: false
+  save_progress_images: true 
   progress_save_interval: 10
 human:
-  name: hugs_trimlp
+  name: hugs_trimlp # or hugs_wo_trimlp to train without TriPlane and MLPs
   ckpt: null
   sh_degree: 0
   n_subdivision: 2
@@ -38,6 +39,7 @@ human:
   run_init: false
   estimate_delta: true
   triplane_res: 256
+  # triplane_res: 128 # reduced to fit into the available VRAM
   optim_pose: true
   optim_betas: false
   optim_trans: true
@@ -86,7 +88,8 @@ human:
   densify_grad_threshold: 0.0002
   prune_min_opacity: 0.005
   densify_extent: 1.0
-  max_n_gaussians: 524288
+  # max_n_gaussians: 524288
+  max_n_gaussians: 131072 # reduced to fit into the available VRAM
   percent_dense: 0.01
 scene:
   name: scene_gs
@@ -115,7 +118,8 @@ scene:
   densify_until_iter: 15000
   densify_grad_threshold: 0.0002
   prune_min_opacity: 0.005
-  max_n_gaussians: 2097152
+  # max_n_gaussians: 2097152
+  max_n_gaussians: 131072 # reduced to fit into the available VRAM\
   loss:
     ssim_w: 0.2
     l1_w: 0.8

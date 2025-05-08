@@ -3,12 +3,19 @@
 # Copyright (C) 2024 Apple Inc. All Rights Reserved.
 #
 
+
+
+"""
+The cfg_files/release directory contains the finalized configuration files (.yaml) used for training HUGS. 
+Refer to the config.py file (the current file) for details on various configuration parameters and their descriptions.
+"""
+
 from omegaconf import OmegaConf
 
 # general configuration
 cfg = OmegaConf.create()
 cfg.seed = 0
-cfg.mode = 'human' # 'human_scene' or 'scene'
+cfg.mode = 'human' # or 'human_scene' or 'scene'
 cfg.output_path = 'output'
 cfg.cfg_file = ''
 cfg.exp_name = 'test'

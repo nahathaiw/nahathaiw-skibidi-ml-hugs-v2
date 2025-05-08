@@ -65,6 +65,8 @@ def main(cfg):
     # get trainer
     trainer = GaussianTrainer(cfg)
     
+    
+    # run training
     if not cfg.eval:
         trainer.train()
         trainer.save_ckpt()
@@ -84,22 +86,29 @@ def main(cfg):
 
 
 if __name__=='__main__':
+    
+    # parse command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--cfg_file", required=True, help="path to the yaml config file")
     parser.add_argument("--cfg_id", type=int, default=-1, help="id of the config to run")
     args, extras = parser.parse_known_args()
     
+    
+    
+    # load config file
     cfg_file = OmegaConf.load(args.cfg_file)
     list_of_cfgs, hyperparam_search_keys = get_cfg_items(cfg_file)
     
     logger.info(f'Running {len(list_of_cfgs)} experiments')
     
+    
+    # check if cfg_id is valid
     if args.cfg_id >= 0:
         cfg_item = list_of_cfgs[args.cfg_id]
         logger.info(f'Running experiment {args.cfg_id} -- {cfg_item.exp_name}')
         default_cfg.cfg_file = args.cfg_file
         cfg = OmegaConf.merge(default_cfg, cfg_item, OmegaConf.from_cli(extras))
-        main(cfg)
+        main(cfg) # main function will handle the rest
     else:
         for exp_id, cfg_item in enumerate(list_of_cfgs):
             logger.info(f'Running experiment {exp_id} -- {cfg_item.exp_name}')

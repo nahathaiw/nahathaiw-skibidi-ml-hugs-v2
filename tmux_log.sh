@@ -1,0 +1,1 @@
+tmux capture-pane -pS -10000 > tmux_log.txt

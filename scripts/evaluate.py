@@ -53,7 +53,9 @@ def main(cfg):
             logger.warning('No human ckpt found')
             
     latest_scene_ckpt = None
-    scene_ckpt_files = sorted(glob.glob(cfg.logdir_ckpt + '/*scene*.pth'))
+    scene_ckpt_files = glob.glob(cfg.logdir_ckpt + '/*scene*.pth')
+    scene_ckpt_files += glob.glob(cfg.logdir_ckpt + '/ckpt/*scene*.pth')
+    scene_ckpt_files = sorted(scene_ckpt_files)
     if len(scene_ckpt_files) > 0:
         latest_scene_ckpt = scene_ckpt_files[-1]
         logger.info(f'Found scene ckpt: {latest_scene_ckpt}')
