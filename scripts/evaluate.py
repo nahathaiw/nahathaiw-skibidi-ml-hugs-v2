@@ -87,6 +87,8 @@ if __name__=='__main__':
     args, extras = parser.parse_known_args()
         
     cfg_file = args.output_dir + '/config_train.yaml'
+    # don't change the original config
+    # instead, change the config in the output directory to affect this script
     
     cfg_file = OmegaConf.load(cfg_file)
     

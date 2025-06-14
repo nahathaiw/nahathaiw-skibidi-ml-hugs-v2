@@ -408,7 +408,8 @@ class GaussianTrainer():
         
         if self.human_gs:
             torch.save(self.human_gs.state_dict(), f'{self.cfg.logdir_ckpt}/human_{iter_s}.pth')
-            save_ply(self.human_gs, f'{self.cfg.logdir}/meshes/human_{iter_s}_splat.ply')
+            # this results in a crash: TypeError: 'HUGS_TRIMLP' object is not subscriptable
+            # save_ply(self.human_gs, f'{self.cfg.logdir}/meshes/human_{iter_s}_splat.ply')
             logger.debug(f'Saved human gaussian {iter_s} using save_ckpt()')
         if self.scene_gs:
             torch.save(self.scene_gs.state_dict(), f'{self.cfg.logdir_ckpt}/scene_{iter_s}.pth')

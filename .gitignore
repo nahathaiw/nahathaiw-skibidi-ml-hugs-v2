@@ -9,3 +9,4 @@ tensorboard_3d
 screenshots
 *.pth
 *.zip
+for_demo/

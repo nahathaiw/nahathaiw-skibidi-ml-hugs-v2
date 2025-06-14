@@ -31,6 +31,13 @@ def get_center_and_diag(cam_centers):
     return center.flatten(), diagonal
 
 
+# SMPL parameters are stored in a .npz file with the following structure:
+# {
+#     'betas': np.ndarray,  # shape (10,)
+#     'body_pose': np.ndarray,  # shape (N, 69) where N is the number of frames
+#     'global_orient': np.ndarray,  # shape (N, 3)
+#      'transl': np.ndarray,  # shape (N, 3)
+# }
 def load_smpl_param(path):
     smpl_params = dict(np.load(str(path)))
     if "thetas" in smpl_params:
@@ -57,6 +64,7 @@ def get_data_splits(scene):
     assert len(test_list) > 0
     assert len(val_list) > 0    
     return train_list, val_list, test_list
+
 
 
 def mocap_path(scene_name):
@@ -201,12 +209,17 @@ class NeumanDataset(torch.utils.data.Dataset):
         smpl_params = np.load(smpl_params_path)
         smpl_params = {f: smpl_params[f] for f in smpl_params.files}
         
+        # motion is handled here
         if split == 'anim':
             motion_path, start_idx, end_idx, skip = mocap_path(seq)
             motions = np.load(motion_path)
             poses = motions['poses'][start_idx:end_idx:skip, AMASS_SMPLH_TO_SMPL_JOINTS]
             transl = motions['trans'][start_idx:end_idx:skip]
             betas = smpl_params['betas'][0]
+            
+            # transl[:, 2] += 1.0   # Add offset to the z-coordinate of all frames   
+            # what's the unit? meter?
+            
             smpl_params = {
                 'global_orient': poses[:, :3],
                 'body_pose': poses[:, 3:],
