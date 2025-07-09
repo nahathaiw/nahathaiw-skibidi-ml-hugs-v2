@@ -70,9 +70,12 @@ def main(cfg):
     # get trainer
     trainer = GaussianTrainer(cfg)
  
-    trainer.validate()
+ 
+    # skip validation here
+    # trainer.validate() 
                 
     # run animation
+    logger.info('Running animation...')
     trainer.animate()
     
     mode = 'eval' if cfg.eval else 'train'

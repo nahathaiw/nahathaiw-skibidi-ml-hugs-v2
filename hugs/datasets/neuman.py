@@ -92,7 +92,7 @@ def mocap_path(scene_name):
     elif os.path.basename(scene_name) == 'lab': # and opt.motion_name == 'chacha':
         return './data/SFU/0008/0008_ChaCha001_poses.npz', 0, 1000, 4
     elif os.path.basename(scene_name) == 'ours':
-        return './jumping.npz', 0, 120, 1
+        return './picking.npz', 0, 120, 1
     else:
         raise ValueError('Define new elif branch')
 
@@ -118,9 +118,13 @@ def alignment(scene_name, motion_name=None):
         manual_trans = np.array([0.0, 0.24, 0.33])
         manual_rot = np.array([95.8, -1.2, -2.2]) / 180 * np.pi
         manual_scale = 0.25
-    elif os.path.basename(scene_name) == 'lab' or os.path.basename(scene_name) == 'ours':
+    elif os.path.basename(scene_name) == 'lab':
         manual_trans = np.array([5.76, 3.03, 11.69])
         manual_rot = np.array([90.4, -4.2, -1.8]) / 180 * np.pi
+        manual_scale = 3.0
+    elif os.path.basename(scene_name) == 'ours':
+        manual_trans = np.array([5.76, 3.03, 11.69])
+        manual_rot = np.array([180, -4.2, -1.8]) / 180 * np.pi
         manual_scale = 3.0
     else:
         manual_trans = np.array([0, 0, 0])
