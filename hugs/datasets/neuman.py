@@ -36,7 +36,8 @@ def get_center_and_diag(cam_centers):
 #     'betas': np.ndarray,  # shape (10,)
 #     'body_pose': np.ndarray,  # shape (N, 69) where N is the number of frames
 #     'global_orient': np.ndarray,  # shape (N, 3)
-#      'transl': np.ndarray,  # shape (N, 3)
+#     'transl': np.ndarray,  # shape (N, 3)
+# N frames
 # }
 def load_smpl_param(path):
     smpl_params = dict(np.load(str(path)))
@@ -90,6 +91,8 @@ def mocap_path(scene_name):
         return './data/SFU/0007/0007_Cartwheel001_poses.npz', 200, 1000, 8
     elif os.path.basename(scene_name) == 'lab': # and opt.motion_name == 'chacha':
         return './data/SFU/0008/0008_ChaCha001_poses.npz', 0, 1000, 4
+    elif os.path.basename(scene_name) == 'ours':
+        return './kicking.npz', 0, 120, 1
     else:
         raise ValueError('Define new elif branch')
 
@@ -115,7 +118,7 @@ def alignment(scene_name, motion_name=None):
         manual_trans = np.array([0.0, 0.24, 0.33])
         manual_rot = np.array([95.8, -1.2, -2.2]) / 180 * np.pi
         manual_scale = 0.25
-    elif os.path.basename(scene_name) == 'lab':
+    elif os.path.basename(scene_name) == 'lab' or os.path.basename(scene_name) == 'ours':
         manual_trans = np.array([5.76, 3.03, 11.69])
         manual_rot = np.array([90.4, -4.2, -1.8]) / 180 * np.pi
         manual_scale = 3.0
@@ -173,7 +176,7 @@ def rendering_caps(scene_name, nframes, scene):
             temp = copy.deepcopy(scene.captures[start_id])
             temp.cam_pose.camera_center_in_world -= interval * i * temp.cam_pose.right
             dummy_caps.append(temp)
-    elif os.path.basename(scene_name) == 'lab':
+    elif os.path.basename(scene_name) == 'lab' or os.path.basename(scene_name) == 'ours':
         dummy_caps = []
         start_id = 39
         ellipse_a = 0.15 * 10
@@ -212,9 +215,19 @@ class NeumanDataset(torch.utils.data.Dataset):
         # motion is handled here
         if split == 'anim':
             motion_path, start_idx, end_idx, skip = mocap_path(seq)
-            motions = np.load(motion_path)
-            poses = motions['poses'][start_idx:end_idx:skip, AMASS_SMPLH_TO_SMPL_JOINTS]
-            transl = motions['trans'][start_idx:end_idx:skip]
+            
+            if seq == 'ours' and 'kicking' in motion_path:
+                motions = np.load(motion_path)
+                poses = motions['poses'][start_idx:end_idx:skip]
+                transl = motions['trans'][start_idx:end_idx:skip]
+            else:
+                # Original .npz format
+                # i.e. SMPL from AMASS SMPL-H
+                motions = np.load(motion_path)
+                poses = motions['poses'][start_idx:end_idx:skip, AMASS_SMPLH_TO_SMPL_JOINTS]
+                transl = motions['trans'][start_idx:end_idx:skip]
+            
+            
             betas = smpl_params['betas'][0]
             
             # transl[:, 2] += 1.0   # Add offset to the z-coordinate of all frames   
