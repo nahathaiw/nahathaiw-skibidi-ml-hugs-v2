@@ -92,7 +92,7 @@ def mocap_path(scene_name):
     elif os.path.basename(scene_name) == 'lab': # and opt.motion_name == 'chacha':
         return './data/SFU/0008/0008_ChaCha001_poses.npz', 0, 1000, 4
     elif os.path.basename(scene_name) == 'ours':
-        return './kicking.npz', 0, 120, 1
+        return './jumping.npz', 0, 120, 1
     else:
         raise ValueError('Define new elif branch')
 
@@ -216,7 +216,7 @@ class NeumanDataset(torch.utils.data.Dataset):
         if split == 'anim':
             motion_path, start_idx, end_idx, skip = mocap_path(seq)
             
-            if seq == 'ours' and 'kicking' in motion_path:
+            if seq == 'ours':
                 motions = np.load(motion_path)
                 poses = motions['poses'][start_idx:end_idx:skip]
                 transl = motions['trans'][start_idx:end_idx:skip]
