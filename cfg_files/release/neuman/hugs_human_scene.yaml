@@ -11,7 +11,8 @@ eval: false
 bg_color: white
 dataset:
   name: neuman
-  seq: ["lab", "citron", "seattle", "bike", "jogging", "parkinglot"]
+  # seq: ["lab", "citron", "seattle", "bike", "jogging", "parkinglot"]
+  seq: ["citron", "seattle", "bike", "lab", "jogging", "parkinglot"]
 train:
   batch_size: 1
   num_workers: 0

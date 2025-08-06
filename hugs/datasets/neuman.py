@@ -92,7 +92,8 @@ def mocap_path(scene_name):
     elif os.path.basename(scene_name) == 'lab': # and opt.motion_name == 'chacha':
         return './data/SFU/0008/0008_ChaCha001_poses.npz', 0, 1000, 4
     elif os.path.basename(scene_name) == 'ours':
-        return './picking.npz', 0, 120, 1
+        return './smpl_params.npz', 0, 196, 1
+        # [TODO] change this to an input argument
     else:
         raise ValueError('Define new elif branch')
 
@@ -123,7 +124,7 @@ def alignment(scene_name, motion_name=None):
         manual_rot = np.array([90.4, -4.2, -1.8]) / 180 * np.pi
         manual_scale = 3.0
     elif os.path.basename(scene_name) == 'ours':
-        manual_trans = np.array([5.76, 3.03, 11.69])
+        manual_trans = np.array([5.0, 2, 11.69])
         manual_rot = np.array([180, -4.2, -1.8]) / 180 * np.pi
         manual_scale = 3.0
     else:
@@ -187,8 +188,8 @@ def rendering_caps(scene_name, nframes, scene):
         ellipse_b = 0.03
         for i in range(nframes):
             temp = copy.deepcopy(scene.captures[start_id])
-            x_offset= temp.cam_pose.right * (ellipse_a * np.cos(i/nframes * 2 * np.pi))
-            y_offset= temp.cam_pose.up * ellipse_b * np.sin(i/nframes * 2 * np.pi)
+            x_offset= temp.cam_pose.right # * (ellipse_a * np.cos(i/nframes * 2 * np.pi))
+            y_offset= temp.cam_pose.up # * ellipse_b * np.sin(i/nframes * 2 * np.pi)
             temp.cam_pose.camera_center_in_world = temp.cam_pose.camera_center_in_world + x_offset + y_offset
             temp.cam_pose.camera_center_in_world += temp.cam_pose.forward * 0.2
             dummy_caps.append(temp)

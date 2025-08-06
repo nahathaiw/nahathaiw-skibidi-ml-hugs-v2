@@ -71,8 +71,7 @@ def main(cfg):
     trainer = GaussianTrainer(cfg)
  
  
-    # skip validation here
-    # trainer.validate() 
+    trainer.validate() 
                 
     # run animation
     logger.info('Running animation...')
