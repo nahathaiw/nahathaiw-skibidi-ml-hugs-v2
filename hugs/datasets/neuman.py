@@ -126,7 +126,7 @@ def alignment(scene_name, motion_name=None):
     elif os.path.basename(scene_name) == 'ours':
         manual_trans = np.array([5.0, 2, 11.69])
         manual_rot = np.array([180, -4.2, -1.8]) / 180 * np.pi
-        manual_scale = 3.0
+        manual_scale = 2.5
     else:
         manual_trans = np.array([0, 0, 0])
         manual_rot = np.array([0, 0, 0]) / 180 * np.pi
@@ -191,7 +191,7 @@ def rendering_caps(scene_name, nframes, scene):
             x_offset= temp.cam_pose.right # * (ellipse_a * np.cos(i/nframes * 2 * np.pi))
             y_offset= temp.cam_pose.up # * ellipse_b * np.sin(i/nframes * 2 * np.pi)
             temp.cam_pose.camera_center_in_world = temp.cam_pose.camera_center_in_world + x_offset + y_offset
-            temp.cam_pose.camera_center_in_world += temp.cam_pose.forward * 0.2
+            temp.cam_pose.camera_center_in_world += temp.cam_pose.forward * 1.0
             dummy_caps.append(temp)
     return dummy_caps
 
